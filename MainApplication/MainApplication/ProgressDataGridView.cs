@@ -1,18 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Data.SqlClient;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Linq;
-using System.Text;
+using System.Runtime.InteropServices;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace MainApplication
 {
+    /*
+    NOTE: This is an improved version compared to what is shown in the video it has an additional feature of showing the
+    DataGrid's cells as disabled when the loading cursor is showing.
+    */
     public class ProgressDataGridView: DataGridView
     {
         private BackgroundWorker AnimationThread = new BackgroundWorker();
@@ -20,6 +21,23 @@ namespace MainApplication
 
         private int CurrentAngle = 0;
         private bool ShowLoadingCursor = false;
+
+        private Bitmap GridCellsImageCopy;
+        private ControlsRectangle GridRectangle = new ControlsRectangle();
+
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool GetWindowRect(IntPtr hWnd, out ControlsRectangle lpRect);
+        [StructLayout(LayoutKind.Sequential)]
+        private struct ControlsRectangle
+        {
+            public int Left;
+            public int Top;
+            public int Right; 
+            public int Bottom;
+            public int Width { get { return Right - Left; } }
+            public int Height { get { return Bottom - Top; } }
+        }
 
         //constructor
         public ProgressDataGridView()
@@ -36,6 +54,7 @@ namespace MainApplication
             //once the data is loaded, stop the loading cursor and repaint the datagrid
             ShowLoadingCursor = false;
             Invalidate();
+            GridCellsImageCopy = null;
         }
 
         private void DataThread_DoWork(object sender, DoWorkEventArgs e)
@@ -81,7 +100,7 @@ namespace MainApplication
                 PaintLoadingCursor();
 
                 //animation effect/delay
-                Thread.Sleep(100);
+                Thread.Sleep(75);
             }
         }
 
@@ -99,19 +118,15 @@ namespace MainApplication
                 int cursorY = (Height / 2) - (cursorSize / 2);
                 int brushWidth = 6;
 
-                //BUGFIX/WORKAROUND ======> pixelation when the grid has no rows
-                if (Rows.Count == 0)
-                {
-                    int backgroundX = cursorX - (brushWidth / 2);
-                    int backgroundY = cursorY - (brushWidth / 2);
-                    int backroundSize = cursorSize + brushWidth + 1;
-
-                    //create a base which color is the same with the datagrid
-                    using (SolidBrush brush = new SolidBrush(BackgroundColor))
-                    {
-                        graphics.FillRectangle(brush, backgroundX, backgroundY, backroundSize, backroundSize);
-                    }
-                }
+                //BUGFIX/WORKAROUND ======> pixelation
+                //I think it is because the loading cursor that we are painting has no reference color to blend with
+                //since it is like a floating image on top of the DataGrid, thats why there is still a pixelation.
+                //So the workaround will be to paint an image which will serve as the base/background image so that
+                //the loading cursor will have a reference color to blend and remove the pixelation.
+                //It also serves as a way to show that the grids cells are disabled, because the data is loading.
+                int x = RowHeadersVisible ? RowHeadersWidth : 0;
+                int y = ColumnHeadersVisible ? ColumnHeadersHeight : 0;
+                graphics.DrawImage(GridCellsImageCopy, x, y);
 
                 //draw base image
                 using (LinearGradientBrush brush = new LinearGradientBrush(ClientRectangle, Color.FromArgb(93, 93, 93), Color.FromArgb(0, 0, 255), LinearGradientMode.Vertical))
@@ -135,14 +150,52 @@ namespace MainApplication
             }
         }
 
+        private void GetGridBodyAndSaveToImage()
+        {
+            //get the rectangle of the DataGridView in the Screen (not in the form) or the actual position of the
+            //DataGridView in the Screen monitor
+            GetWindowRect(Handle, out GridRectangle);
+
+            //calculate the dimension of the bitmap and create it
+            int rowHeadsWidth = RowHeadersVisible ? RowHeadersWidth : 0;
+            int columnHeadsHeight = ColumnHeadersVisible ? ColumnHeadersHeight : 0;
+            int width = Width - rowHeadsWidth - 1;
+            int height = Height - columnHeadsHeight - 1;
+            GridCellsImageCopy = new Bitmap(width, height);
+
+            //copy the DataGrids content to the bitmap but don't include the rowheader and columnheader
+            using (Graphics bitmapGraphics = Graphics.FromImage(GridCellsImageCopy))
+            {
+                bitmapGraphics.CopyFromScreen(GridRectangle.Left + rowHeadsWidth, GridRectangle.Top + columnHeadsHeight,
+                    0, 0, new Size(GridRectangle.Width, GridRectangle.Height), CopyPixelOperation.SourceCopy);
+            }
+
+            //make the image grayscale only if the grid cells are not empty
+            if (Rows.Count > 0)
+                GridCellsImageCopy = (Bitmap)ToolStripRenderer.CreateDisabledImage(GridCellsImageCopy);
+        }
+
+        protected override void OnPaint(PaintEventArgs e)
+        {
+            //disable the painting of the DataGridView when the loading cursor is showing
+            if (ShowLoadingCursor) return;
+
+            base.OnPaint(e);
+        }
+
         //public method to execute everything
         public void LoadData(string connectionString, string commandText, bool autoGenerateColumns)
         {
             //BUGFIX ======> if one of the threads is running stop the execution
             if (AnimationThread.IsBusy || DataThread.IsBusy) return;
 
-            //show the loading cursor
+            //set the flagging that the loading cursor will show
             ShowLoadingCursor = true;
+
+            //get the grid's content and save it to a Bitmap
+            GetGridBodyAndSaveToImage();
+
+            //start the animation of cursor
             AnimationThread.RunWorkerAsync();
 
             //load the data

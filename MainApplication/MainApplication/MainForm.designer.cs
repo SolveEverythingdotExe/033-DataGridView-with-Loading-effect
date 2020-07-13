@@ -28,15 +28,25 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
-            this.dataGridView = new MainApplication.ProgressDataGridView();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
             this.btnRefresh = new System.Windows.Forms.Button();
+            this.dataGridView = new MainApplication.ProgressDataGridView();
             this.dataGridViewColumnId = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewColumnPayer = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewColumnPayee = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewColumnAmount = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView)).BeginInit();
             this.SuspendLayout();
+            // 
+            // btnRefresh
+            // 
+            this.btnRefresh.Location = new System.Drawing.Point(184, 314);
+            this.btnRefresh.Name = "btnRefresh";
+            this.btnRefresh.Size = new System.Drawing.Size(75, 23);
+            this.btnRefresh.TabIndex = 1;
+            this.btnRefresh.Text = "Refresh";
+            this.btnRefresh.UseVisualStyleBackColor = true;
+            this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
             // 
             // dataGridView
             // 
@@ -53,16 +63,6 @@
             this.dataGridView.Name = "dataGridView";
             this.dataGridView.Size = new System.Drawing.Size(444, 286);
             this.dataGridView.TabIndex = 0;
-            // 
-            // btnRefresh
-            // 
-            this.btnRefresh.Location = new System.Drawing.Point(184, 314);
-            this.btnRefresh.Name = "btnRefresh";
-            this.btnRefresh.Size = new System.Drawing.Size(75, 23);
-            this.btnRefresh.TabIndex = 1;
-            this.btnRefresh.Text = "Refresh";
-            this.btnRefresh.UseVisualStyleBackColor = true;
-            this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
             // 
             // dataGridViewColumnId
             // 
@@ -91,8 +91,8 @@
             // dataGridViewColumnAmount
             // 
             this.dataGridViewColumnAmount.DataPropertyName = "Amount";
-            dataGridViewCellStyle4.Format = "N2";
-            this.dataGridViewColumnAmount.DefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle8.Format = "N2";
+            this.dataGridViewColumnAmount.DefaultCellStyle = dataGridViewCellStyle8;
             this.dataGridViewColumnAmount.HeaderText = "Amount";
             this.dataGridViewColumnAmount.Name = "dataGridViewColumnAmount";
             this.dataGridViewColumnAmount.ReadOnly = true;
