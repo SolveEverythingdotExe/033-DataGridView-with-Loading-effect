@@ -1,0 +1,9 @@
+D:\Projects\C#\YT\SolveEverything.exe\033 - DataGridView with Loading effect\MainApplication\MainApplication\bin\Debug\MainApplication.exe.config
+D:\Projects\C#\YT\SolveEverything.exe\033 - DataGridView with Loading effect\MainApplication\MainApplication\bin\Debug\MainApplication.exe
+D:\Projects\C#\YT\SolveEverything.exe\033 - DataGridView with Loading effect\MainApplication\MainApplication\bin\Debug\MainApplication.pdb
+D:\Projects\C#\YT\SolveEverything.exe\033 - DataGridView with Loading effect\MainApplication\MainApplication\obj\Debug\MainApplication.MainForm.resources
+D:\Projects\C#\YT\SolveEverything.exe\033 - DataGridView with Loading effect\MainApplication\MainApplication\obj\Debug\MainApplication.Properties.Resources.resources
+D:\Projects\C#\YT\SolveEverything.exe\033 - DataGridView with Loading effect\MainApplication\MainApplication\obj\Debug\MainApplication.csproj.GenerateResource.cache
+D:\Projects\C#\YT\SolveEverything.exe\033 - DataGridView with Loading effect\MainApplication\MainApplication\obj\Debug\MainApplication.csproj.CoreCompileInputs.cache
+D:\Projects\C#\YT\SolveEverything.exe\033 - DataGridView with Loading effect\MainApplication\MainApplication\obj\Debug\MainApplication.exe
+D:\Projects\C#\YT\SolveEverything.exe\033 - DataGridView with Loading effect\MainApplication\MainApplication\obj\Debug\MainApplication.pdb
